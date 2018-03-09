@@ -288,32 +288,37 @@ export default class MegamorphicModel extends EmberObject {
 
   _notifyProperties(keys) {
     Ember.beginPropertyChanges();
-    let key;
     for (let i = 0, length = keys.length; i < length; i++) {
-      key = keys[i];
-      let oldValue = this._cache[key];
-      let newValue = this._internalModel._modelData.getAttr(key);
-
-      let oldIsRecordArray = oldValue && oldValue instanceof M3RecordArray;
-
-      if (oldIsRecordArray) {
-        // TODO: do this lazily
-        let internalModels = resolveRecordArrayInternalModels(
-          key,
-          newValue,
-          this._modelName,
-          this._store,
-          this._schema
-        );
-        oldValue._setInternalModels(internalModels);
-      } else {
-        // TODO: disconnect modeldata -> childModeldata in the case of nested model -> primitive
-        // anything -> undefined | primitive
-        delete this._cache[key];
-        this.notifyPropertyChange(key);
-      }
+      this.notifyPropertyChange(keys[i]);
     }
     Ember.endPropertyChanges();
+  }
+
+  notifyPropertyChange(key) {
+    if (!this._schema.isAttributeIncluded(this._modelName, key)) {
+      return;
+    }
+    let oldValue = this._cache[key];
+    let newValue = this._internalModel._modelData.getAttr(key);
+
+    let oldIsRecordArray = oldValue && oldValue instanceof M3RecordArray;
+
+    if (oldIsRecordArray) {
+      // TODO: do this lazily
+      let internalModels = resolveRecordArrayInternalModels(
+        key,
+        newValue,
+        this._modelName,
+        this._store,
+        this._schema
+      );
+      oldValue._setInternalModels(internalModels);
+    } else {
+      // TODO: disconnect modeldata -> childModeldata in the case of nested model -> primitive
+      // anything -> undefined | primitive
+      delete this._cache[key];
+      super.notifyPropertyChange(key);
+    }
   }
 
   changedAttributes() {

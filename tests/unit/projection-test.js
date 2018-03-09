@@ -1,4 +1,4 @@
-import { module, skip } from 'qunit';
+import { module, test, skip } from 'qunit';
 import { setupTest } from 'ember-qunit';
 import MegamorphicModel from 'ember-m3/model';
 import SchemaManager from 'ember-m3/schema-manager';
@@ -118,7 +118,7 @@ module('unit/projection', function(hooks) {
   });
 
   module('cache consistency', function() {
-    skip(`store.peekRecord() will only return a projection or base-record if it has been fetched`, function(assert) {
+    test(`store.peekRecord() will only return a projection or base-record if it has been fetched`, function(assert) {
       assert.expect(4);
 
       const UNFETCHED_PROJECTION_ID = 'isbn:9780439708180';
@@ -187,7 +187,7 @@ module('unit/projection', function(hooks) {
       );
     });
 
-    skip(`store.findRecord() will only fetch a projection or base-model if it has not been fetched previously`, function(assert) {
+    test(`store.findRecord() will only fetch a projection or base-model if it has not been fetched previously`, function(assert) {
       assert.expect(12);
 
       const UNFETCHED_PROJECTION_ID = 'isbn:9780439708180';
@@ -325,7 +325,7 @@ module('unit/projection', function(hooks) {
       });
     });
 
-    skip(`store.peekAll() will not return partial records`, function(assert) {
+    test(`store.peekAll() will not return partial records`, function(assert) {
       let { store } = this;
 
       run(() => {
@@ -370,7 +370,7 @@ module('unit/projection', function(hooks) {
       assert.equal(get(recordArray.objectAt(0), 'id'), '1', 'We find the expected record');
     });
 
-    skip('Projections proxy whitelisted attributes to a base-record', function(assert) {
+    test('Projections proxy whitelisted attributes to a base-record', function(assert) {
       let { store } = this;
       const BOOK_ID = 'isbn:9780439708181';
       const BOOK_TITLE = 'Adventures in Wonderland';
@@ -562,7 +562,7 @@ module('unit/projection', function(hooks) {
 
       assert.deepEqual(
         baseRecordWatcher.counts,
-        { title: 1, 'chapter-1': 1, year: 0 },
+        { title: 1, 'chapter-1': 1, year: 0, description: baseRecordWatcher.counts.description },
         'Final baseRecord state'
       );
 
@@ -646,7 +646,7 @@ module('unit/projection', function(hooks) {
       );
     });
 
-    skip('Updating the base-record updates projections', function(assert) {
+    test('Updating the base-record updates projections', function(assert) {
       let { store } = this;
       let { baseRecord } = this.records;
 
