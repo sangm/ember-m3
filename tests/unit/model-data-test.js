@@ -12,10 +12,21 @@ module('unit/model-data', function(hooks) {
     this.mockModelData = function() {
       return new M3ModelData('com.exmaple.bookstore.book', '1', this.storeWrapper, null);
     };
+
+    SchemaManager.registerSchema({
+      computeNestedModel(key, value) {
+        if (value !== null && typeof value === 'object') {
+          return { id: key, type: 'com.exmaple.bookstore.book', attributes: value };
+        }
+      },
+
+      computeBaseModelName() {},
+    });
   });
 
   hooks.afterEach(function() {
     this.sinon.restore();
+    SchemaManager.registerSchema(null);
   });
 
   test(`.eachAttribute iterates attributes, in-flight attrs and data`, function(assert) {
@@ -193,18 +204,6 @@ module('unit/model-data', function(hooks) {
         false,
         { record: this.child11Model }
       );
-
-      SchemaManager.registerSchema({
-        computeNestedModel(key, value) {
-          if (value !== null && typeof value === 'object') {
-            return { id: key, type: 'com.exmaple.bookstore.book', attributes: value };
-          }
-        },
-      });
-    });
-
-    hooks.afterEach(function() {
-      SchemaManager.registerSchema(null);
     });
 
     test('.pushData calls reified child model datas recursively', function(assert) {
