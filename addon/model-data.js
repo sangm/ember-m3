@@ -112,15 +112,15 @@ export default class M3ModelData {
       this.id = jsonApiResource.id + '';
     }
 
+    if (this._notifyProjectionProperties(changedKeys)) {
+      return [];
+    }
+
     if (notifyRecord) {
       this._notifyRecordProperties(changedKeys);
     }
 
-    if (this._notifyProjectionProperties(changedKeys)) {
-      return [];
-    } else {
-      return changedKeys || [];
-    }
+    return changedKeys || [];
   }
 
   willCommit() {
@@ -179,15 +179,15 @@ export default class M3ModelData {
 
     this._updateChangedAttributes();
 
+    if (this._notifyProjectionProperties(changedKeys)) {
+      return [];
+    }
+
     if (notifyRecord) {
       this._notifyRecordProperties(changedKeys);
     }
 
-    if (this._notifyProjectionProperties(changedKeys)) {
-      return [];
-    } else {
-      return changedKeys || [];
-    }
+    return changedKeys || [];
   }
 
   getHasMany() {}
@@ -377,7 +377,10 @@ export default class M3ModelData {
       }
     }
 
-    this._notifyProjectionProperties(dirtyKeys);
+    if (this._notifyProjectionProperties(dirtyKeys)) {
+      // notifyProjectionProperties already invalidated all relevant records' properties
+      return [];
+    }
 
     if (notifyRecord) {
       this._notifyRecordProperties(dirtyKeys);
